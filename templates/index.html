@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAV → MP4 Dönüştürücü ve Düzenleyici</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="toolbar-tag"><span class="rec-dot"></span> DAV STUDIO — YEREL İŞLEME</div>
+    <h1><a href="#" id="home-link" class="logo-link">DAV<span class="accent"> → </span>MP4</a></h1>
+    <p class="subtitle">Yükle · kırp · yakınlaştır · kaliteyi iyileştir · dışa aktar</p>
+
+    <div id="stepper" class="hidden">
+      <div class="stepper-track">
+        <div class="stepper-fill" id="stepper-fill"></div>
+        <div class="stepper-playhead" id="stepper-playhead"></div>
+      </div>
+      <div class="stepper-marks">
+        <div class="step" data-step="1">
+          <span class="step-tc">T01</span>
+          <span class="step-label">Yükle</span>
+        </div>
+        <div class="step" data-step="2">
+          <span class="step-tc">T02</span>
+          <span class="step-label">Kırp</span>
+        </div>
+        <div class="step" data-step="3">
+          <span class="step-tc">T03</span>
+          <span class="step-label">Düzenle</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ==================== ADIM 0: KÜTÜPHANE / ANA SAYFA ==================== -->
+    <section id="home-section" class="card step-panel">
+      <div class="row" style="justify-content: space-between;">
+        <h2 style="margin:0;">Kütüphane</h2>
+        <button id="new-video-btn" class="primary">+ Yeni Video İşle</button>
+      </div>
+
+      <h3>Kaynaklar <span class="hint">(yüklenmiş / kırpılmış, düzenlemeye devam edilebilir)</span></h3>
+      <div id="sources-list" class="library-list">
+        <p class="hint empty-msg">Henüz kaynak yok. Yukarıdan yeni bir video yükleyin.</p>
+      </div>
+
+      <h3>İşlenmiş Videolar</h3>
+      <div id="outputs-list" class="library-list">
+        <p class="hint empty-msg">Henüz işlenmiş video yok.</p>
+      </div>
+    </section>
+
+    <!-- ==================== ADIM 1: YÜKLE ==================== -->
+    <section id="upload-section" class="card step-panel hidden">
+      <button class="back-btn" data-goto="0">◀ Kütüphaneye Dön</button>
+      <h2>Video Yükle</h2>
+      <p class="hint">.dav, .mp4, .avi, .mkv veya .mov dosyası seçin.</p>
+      <div class="row">
+        <input type="file" id="file-input" accept=".dav,.mp4,.avi,.mkv,.mov">
+        <button id="upload-btn">Yükle</button>
+      </div>
+      <div id="upload-status" class="status"></div>
+    </section>
+
+    <!-- ==================== ADIM 2: KIRP ==================== -->
+    <section id="trim-section" class="card step-panel hidden">
+      <button class="back-btn" data-goto="1">◀ Geri (Yeni video yükle)</button>
+      <h2>Başlangıç / Bitiş Seç</h2>
+      <p class="hint">Bu önizleme hızlı olması için kaba kalitede üretildi, sadece zaman seçimi içindir.
+        İzleyip istediğin başlangıç ve bitiş anında butona bas, sonra "Kırp ve Devam Et" ile devam et.
+        Kırpma kaliteyi bozmadan ve çok hızlı yapılır; bir sonraki adımda artık sadece bu kısa
+        bölüm işleneceği için her şey çok daha hızlı olacak.
+        Not: Hız için kırpma en yakın anahtar kareye hizalanır, başlangıç noktası birkaç saniye kayabilir.</p>
+
+      <div id="trim-video-wrap">
+        <video id="trim-video" controls playsinline></video>
+        <span class="corner-bl"></span><span class="corner-br"></span>
+      </div>
+
+      <div class="row">
+        <button id="set-start-btn">Başlangıcı Ayarla (▶ konumu)</button>
+        <span id="start-label" class="hint">Başlangıç: 0.00 sn</span>
+      </div>
+      <div class="row">
+        <button id="set-end-btn">Bitişi Ayarla (▶ konumu)</button>
+        <span id="end-label" class="hint">Bitiş: (sonuna kadar)</span>
+      </div>
+      <div class="row">
+        <button id="reset-trim-btn">Trim'i Sıfırla</button>
+      </div>
+
+      <div class="row">
+        <button id="trim-btn" class="primary">Kırp ve Devam Et →</button>
+      </div>
+      <div id="trim-status" class="status"></div>
+    </section>
+
+    <!-- ==================== ADIM 3: DÜZENLE VE KAYDET ==================== -->
+    <section id="editor-section" class="card step-panel hidden">
+      <button class="back-btn" id="editor-back-btn" data-goto="2">◀ Geri</button>
+      <h2>Alan Seç, Yakınlaştır ve Kaliteyi İyileştir</h2>
+      <p class="hint">Fare ile videonun üzerine tıklayıp sürükleyerek bir dikdörtgen çizin. Bu alan kırpılıp yakınlaştırılır. Seçim yapmazsanız tüm kare kullanılır.</p>
+
+      <div id="video-wrap">
+        <video id="preview-video" controls playsinline></video>
+        <canvas id="overlay"></canvas>
+        <span class="corner-bl"></span><span class="corner-br"></span>
+      </div>
+
+      <div class="row">
+        <button id="clear-selection-btn">Seçimi Temizle</button>
+        <span id="selection-info" class="hint"></span>
+      </div>
+
+      <h3>Kalite İyileştirme</h3>
+      <div class="row enhance-buttons">
+        <button class="enhance-btn" data-value="none">İyileştirme Yok</button>
+        <button class="enhance-btn active" data-value="light">Hafif</button>
+        <button class="enhance-btn" data-value="strong">Güçlü</button>
+      </div>
+
+      <div class="row">
+        <label for="upscale-input">Büyütme</label>
+        <input type="number" id="upscale-input" min="1" max="4" step="0.1" value="1.0">
+        <label for="crf-input">CRF</label>
+        <input type="number" id="crf-input" min="0" max="35" step="1" value="18">
+        <label for="preset-input">Preset</label>
+        <select id="preset-input">
+          <option value="ultrafast">ultrafast</option>
+          <option value="fast">fast</option>
+          <option value="medium" selected>medium</option>
+          <option value="slow">slow</option>
+          <option value="slower">slower</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <button id="save-btn" class="primary">İşle ve MP4 Olarak Kaydet</button>
+      </div>
+
+      <div id="process-status" class="status"></div>
+      <div id="result-wrap" class="hidden">
+        <label for="output-name-input" class="hint">Bu videoya isim ver:</label>
+        <div class="row">
+          <input type="text" id="output-name-input" placeholder="Örn: Kapı Girişi - Gece">
+          <button id="output-rename-btn">Kaydet</button>
+        </div>
+        <div class="row">
+          <a id="download-link" href="#" download="cikti.mp4" class="primary">İndir (MP4)</a>
+          <button id="start-over-btn">Yeni Video ile Başla</button>
+          <button id="goto-home-btn">Kütüphaneye Git</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+[Unit]
+Description=DAV to MP4 Web Uygulamasi
+After=network.target
+
+[Service]
+# Kullanici adini ve yollari kendi sunucunuza gore duzenleyin
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/dav_web_app
+Environment="PATH=/var/www/dav_web_app/venv/bin"
+ExecStart=/var/www/dav_web_app/venv/bin/gunicorn \
+    --workers 2 \
+    --timeout 600 \
+    --bind 127.0.0.1:8000 \
+    app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
