@@ -1,42 +1,27 @@
-# session.md — dav Oturum Günlüğü
-
-Her çalışma oturumunda buraya kısa bir kayıt düşülür: ne yapıldı, hangi kararlar alındı, sıradaki adım ne. Amaç, bir sonraki oturuma (veya başka bir geliştiriciye/Claude örneğine) hızlıca bağlam aktarmak.
-
----
-
-## Şablon
-
-```markdown
-## YYYY-AA-GG
-
-**Yapılanlar:**
-- ...
-
-**Alınan kararlar / neden:**
-- ...
-
-**Açık sorunlar / bilinen eksikler:**
-- ...
-
-**Sıradaki adım:**
-- ...
-```
+# session.md — DAV Web App Oturum Günlüğü
 
 ---
 
 ## 2026-10-05
 
-**Yapılanlar:**
-- Eksik proje çalışma dosyaları oluşturuldu: `architect.md`, `backlog.md`, `CLAUDE.md`, `session.md`, `task.md`.
-- İçerik; README, dosya yapısı, bağımlılık dosyaları ve git geçmişinden çıkarıldı.
+- Şablondan üretilmiş çalışma dosyaları kod ve canlı servis incelenerek yeniden yazıldı.
+- Tespitler: deploy dosyaları 8000 portunu gösteriyor, canlı 8001; kimlik doğrulama yok; `preset` beyaz listesi yok.
 
-**Açık sorunlar / bilinen eksikler:**
-- README yok — kurulum/çalıştırma adımları belgelenmeli.
-- Otomatik test bulunamadı — kritik akışlar için en azından duman (smoke) testleri eklenmeli.
+---
 
-**Sıradaki adım:**
-- `CLAUDE.md` ve `architect.md` içeriğini gözden geçirip proje sahibinin bilgisiyle tamamla.
+## 2026-07-04 → 2026-07-20
 
-### Bu tarihten önceki son commit'ler (referans)
+- 07-04: nginx sitesi etkinleştirildi (videoperfect alan adı, certbot).
+- 07-20: İlk commit — DAV Web App, Dahua kamera kaydı önizleme/kırpma aracı.
 
-- 2026-07-20 — İlk commit: DAV Web App - Dahua kamera kaydı önizleme/kırpma aracı
+---
+
+### Kayıt Şablonu
+
+```markdown
+## YYYY-AA-GG
+**Yapılanlar:** ...
+**Kararlar / neden:** ...
+**Açık sorunlar:** ...
+**Sıradaki adım:** ...
+```

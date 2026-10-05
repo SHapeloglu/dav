@@ -1,48 +1,26 @@
-# CLAUDE.md
+# CLAUDE.md — DAV Web App (VideoPerfect)
 
-Bu dosya, bu proje üzerinde çalışırken Claude'un (Claude Code dahil) izlemesi gereken bağlamı ve kuralları içerir.
+Dahua güvenlik kamerası kayıtlarını (`.dav`, ayrıca mp4/avi/mkv/mov) tarayıcıdan yükleyip önizleme, **zaman aralığı kırpma**, **görüntü alanı kırpma (crop)**, iyileştirme (hqdn3d gürültü azaltma + unsharp + eq), büyütme (upscale) ve H.264'e dönüştürme yapan Flask + ffmpeg uygulaması. Yüklenen/üretilen videolar SQLite kütüphanesinde (`library.db`) listelenir, yeniden adlandırılır, silinir.
 
-## Proje
+- GitHub: https://github.com/SHapeloglu/dav — **PUBLIC repo** (tek commit, 2026-07-20)
+- **Canlı:** bu klasör. systemd `dav-web.service` (User `www-data`, gunicorn 1 worker, timeout 600, `127.0.0.1:8001`), nginx `videoperfect.kelvinaydinlatma.com.tr` (certbot SSL, `client_max_body_size 2048M`).
+- Mimari: `architect.md` · Görevler: `task.md` · Fikirler: `backlog.md` · Günlük: `session.md`
 
-**dav** — _README'de açıklama bulunamadı. Projenin amacını buraya bir-iki cümleyle yazın._
-
-- GitHub: https://github.com/SHapeloglu/dav
-- Sunucu (Contabo): canlı dizin /var/www/dav_web_app (systemd servisi)
-
-## Teknoloji Yığını
-
-- Flask
-- Gunicorn
-
-## Önemli Dosyalar
-
-- `app.py`
-- `deploy/dav-web.service`
-- `requirements.txt`
-- `templates/index.html`
-
-Mimari ayrıntılar için bkz. `architect.md`.
-
-## Sık Kullanılan Komutlar
+## Komutlar
 
 ```bash
-python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt
-python app.py
+cd /var/www/dav_web_app && . venv/bin/activate
+pip install -r requirements.txt          # Flask, gunicorn; sistemde ffmpeg + ffprobe gerekli
+python app.py                            # yerel test
+sudo systemctl restart dav-web && journalctl -u dav-web -f
 ```
 
-## Kurallar
+## Kurallar ve Tuzaklar
 
-- Gizli anahtar, DB bağlantısı vb. yapılandırmayı ortam değişkenlerinden / `.env`den oku; koda gömme.
-- Route içinde iş mantığını büyütme; yardımcı modüllere/servislere ayır.
-- `.env`, parola, token ve API anahtarlarını asla commit etme.
-- Her çalışma oturumunun sonunda `session.md`ye kısa kayıt düş; görev durumunu `task.md`de güncelle.
-- Önceliklendirilmemiş fikirleri `backlog.md`ye yaz; somutlaşınca `task.md`ye taşı.
-
-## Çalışma Dosyaları
-
-| Dosya | Amaç |
-|---|---|
-| `architect.md` | Mimari ve dizin yapısı referansı |
-| `task.md` | Aktif / devam eden / tamamlanan görevler |
-| `backlog.md` | Önceliklendirilmemiş fikir ve teknik borç havuzu |
-| `session.md` | Oturum günlüğü — her oturum sonunda güncellenir |
+- **`deploy/` dosyaları canlıyla aynı değil:** `deploy/dav-web.service` ve `deploy/nginx_dav_web.conf` 8000 portunu gösteriyor; canlı unit **8001**'e bağlı (8000'i başka bir uvicorn kullanıyor). Deploy dosyalarını değiştirirken canlıyı esas al.
+- Uzun ffmpeg işleri istek içinde senkron çalışıyor (gunicorn timeout 600 sn, tek worker) — büyük dosyada aynı anda ikinci istek bekler.
+- ffmpeg her adımda önce akış kopyalama/hızlı yolu, hata olursa yeniden kodlamalı **fallback** komutunu dener; bu yapıyı koru (bazı DAV konteynerleri standart değil).
+- ffmpeg'e giden parametreler (`start`, `end`, `crop`, `upscale`, `crf`, `preset`, `enhance`) istemciden geliyor — liste argümanla `subprocess.run` (shell yok) kullanılıyor; yeni parametre eklerken tip dönüşümü ve izinli değer kontrolü yap (`preset` için beyaz liste yok).
+- `uploads/`, `outputs/`, `library.db` kullanıcı verisi — commit etme (sadece `.gitkeep`'ler izleniyor). Kimlik doğrulama yok: alan adı biliniyorsa herkes yükleme yapabilir.
+- `app.py_v1` eski sürüm yedeği; çalışan kod `app.py`. Klasör sahibi `www-data` — yeni dosyaların izinlerine dikkat.
+- Oturum sonunda `session.md`'ye kayıt düş, `task.md`'yi güncelle.
