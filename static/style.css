@@ -1,5 +1,10 @@
+/* Video işleme sihirbazının ana stil dosyası; koyu tema. */
+/* Adım göstergesi (üstte zaman çizelgesi), vizör (video önizleme), kırpma ve kütüphane listesi burada. */
+/* Renkler :root içinde değişken; yazı tipleri: Space Grotesk (başlık), Inter (metin), JetBrains Mono (zaman ve etiket). */
+/* Telefonda (600 piksel altı) bazı boşluklar daraltılır (en altta). */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+/* :root: renk değişkenleri. --teal: tamamlanan adım ve başarı; --orange: aktif adım ve ana buton; --red: kayıt ve silme. */
 :root {
   --bg: #101216;
   --bg-panel: #191c22;
@@ -7,13 +12,15 @@
   --line: #2c313a;
   --line-soft: #22262d;
   --text: #e9ebef;
-  --muted: #838d9c;
-  --muted-dim: #5b6270;
+  --muted: #a0a9b8;      /* ikincil metin: koyu zeminde ~7:1 */
+  --muted-dim: #8b94a4;  /* meta, tarih, yardımcı yazı: ~5:1 (önceki #5b6270 yaklaşık 2.8:1 idi) */
   --teal: #2dd4bf;
   --teal-dim: #1a3d38;
   --orange: #ff8a3d;
   --orange-dim: #4a2f18;
   --red: #ff5566;
+  --blue: #60a5fa;
+  --blue-dim: #1a2c4a;
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -21,6 +28,7 @@
 
 * { box-sizing: border-box; }
 
+/* Sayfa zemini: üst kısımda hafif teal ışıltı (radial gradient), altta koyu zemin. */
 body {
   margin: 0;
   background:
@@ -39,6 +47,7 @@ header {
   background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
 }
 
+/* Üst etiket (ör. 'Video Dönüştürücü'): küçük, büyük harf, mono yazı. */
 .toolbar-tag {
   display: inline-flex;
   align-items: center;
@@ -51,6 +60,7 @@ header {
   margin-bottom: 10px;
 }
 
+/* Kırmızı kayıt noktası: kayıt sürerken yanıp söner (aşağıdaki pulse animasyonu). */
 .rec-dot {
   width: 7px;
   height: 7px;
@@ -60,12 +70,14 @@ header {
   animation: pulse 2s infinite;
 }
 
+/* pulse: kırmızı halka genişleyip kaybolur (kayıt göstergesi). */
 @keyframes pulse {
   0%   { box-shadow: 0 0 0 0 rgba(255,85,102,0.55); }
   70%  { box-shadow: 0 0 0 6px rgba(255,85,102,0); }
   100% { box-shadow: 0 0 0 0 rgba(255,85,102,0); }
 }
 
+/* Sayfa başlığı: Space Grotesk, kalın, 1.9 rem. */
 header h1 {
   margin: 0 0 6px;
   font-family: var(--font-display);
@@ -83,12 +95,14 @@ header h1 .accent { color: var(--orange); }
 }
 
 /* ==================== Stepper (timeline scrubber) ==================== */
+/* Adım göstergesi (üst zaman çizelgesi): en fazla 460 piksel, ortalı. */
 #stepper {
   max-width: 460px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
+/* Adım çizgisi: ince gri çizgi; altında ilerleme dolgusu üst üste biner. */
 .stepper-track {
   position: relative;
   height: 3px;
@@ -97,6 +111,7 @@ header h1 .accent { color: var(--orange); }
   margin-bottom: 14px;
 }
 
+/* İlerleme dolgusu: teal'den turuncuya geçen çizgi. Genişliği (width) JS ile yüzde olarak verilir; 0.35 saniyede yumuşak değişir. */
 .stepper-fill {
   position: absolute;
   top: 0; left: 0;
@@ -107,6 +122,7 @@ header h1 .accent { color: var(--orange); }
   transition: width 0.35s ease;
 }
 
+/* İlerleme noktası (elmas): 45 derece döndürülmüş kare. Konumu (left) JS ile güncellenir. translate ile ortası noktaya gelir. */
 .stepper-playhead {
   position: absolute;
   top: 50%;
@@ -119,11 +135,13 @@ header h1 .accent { color: var(--orange); }
   box-shadow: 0 0 8px rgba(255,138,61,0.6);
 }
 
+/* Adım işaretleri: eşit aralıklı yatay dizilim. */
 .stepper-marks {
   display: flex;
   justify-content: space-between;
 }
 
+/* Her adım: zaman kodu ve etiket dikey. Henüz gelinmeyen adımlar soluk (opaklık 0.4). */
 .step {
   display: flex;
   flex-direction: column;
@@ -135,6 +153,7 @@ header h1 .accent { color: var(--orange); }
 
 .step.active, .step.done { opacity: 1; }
 
+/* Adım zaman kodu (timecode) yazısı: mono yazı, soluk gri. Aktif ve tamamlanan adımlarda renk değişir. */
 .step-tc {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -161,6 +180,7 @@ main {
   padding: 30px 20px 60px;
 }
 
+/* Kart: koyu panel, ince kenarlık, yuvarlak köşe. */
 .card {
   background: var(--bg-panel);
   border: 1px solid var(--line-soft);
@@ -170,6 +190,7 @@ main {
   position: relative;
 }
 
+/* Kartın üst kenarındaki ince teal ışık çizgisi (sahte eleman, kenarlardan 24 piksel içeride). */
 .card::before {
   content: "";
   position: absolute;
@@ -186,15 +207,116 @@ main {
   letter-spacing: -0.005em;
 }
 
+/* Kart içi küçük başlık: büyük harf, soluk renk. */
 .card h3 {
-  margin: 24px 0 10px;
-  font-size: 0.78rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  margin: 28px 0 12px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
   font-weight: 600;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--teal);
+}
+.card h3 .hint {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  margin-top: 2px;
 }
 
+/* Bölüm renkleri: ana sayfadaki her bölüm kendi rengini (--sec) taşır. Başlık çizgisi, satır şeridi ve etiketler bu rengi kullanır.
+   İzleme: teal (oynatma), Kaynaklar: mavi (ham girdi), İşlenmiş Videolar: turuncu (çıktı). */
+#acc-playlist { --sec: var(--teal); --sec-dim: var(--teal-dim); }
+#acc-sources  { --sec: var(--blue); --sec-dim: var(--blue-dim); }
+#acc-outputs  { --sec: var(--orange); --sec-dim: var(--orange-dim); }
+
+/* Akordiyon: her bölüm bir kart; başlık tıklanabilir satır (açma oku, ad, sayı, toplam). */
+details.acc {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--sec, var(--line));
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+details.acc > summary.acc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-radius: 10px;
+}
+details.acc > summary.acc-head::-webkit-details-marker { display: none; }
+details.acc > summary.acc-head:hover { background: rgba(255, 255, 255, 0.02); }
+details.acc > summary.acc-head:focus-visible { outline: 2px solid var(--sec, var(--teal)); outline-offset: -2px; }
+.acc-chev::before {
+  content: "▸";
+  display: inline-block;
+  color: var(--sec, var(--teal));
+  transition: transform 0.15s ease;
+}
+details.acc[open] > summary .acc-chev::before { transform: rotate(90deg); }
+.acc-summary {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 400;
+  color: var(--muted-dim);
+}
+.acc-body { padding: 0 16px 16px; }
+.acc-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.acc-tools .hint { margin: 0; }
+.acc-body .pl-controls { margin-top: 4px; }
+
+/* Bölüm başlığı satırı: başlık solda, sıralama seçici sağda. Dar ekranda alt satıra geçer. */
+.sec-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  margin: 28px 0 12px;
+}
+.sec-head h3 { margin: 0; }
+.card h3.sec-title { border-left-color: var(--sec, var(--teal)); }
+
+/* Başlıktaki sayı rozeti: bölüm renginde küçük hap. Sayı yoksa (0) hiç görünmez. */
+.sec-count {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: middle;
+  background: var(--sec-dim, var(--teal-dim));
+  color: var(--sec, var(--teal));
+}
+.sec-count:empty { display: none; }
+
+.sort-select {
+  font-size: 0.8rem;
+  padding: 5px 8px;
+}
+
+/* hidden: elemanı tamamen gizler (display none !important). !important, JS'in gizleme isteğinin diğer kurallarca bozulmamasını sağlar. */
 .hidden { display: none !important; }
 
 .hint {
@@ -214,6 +336,7 @@ main {
 .status.ok { color: var(--teal); }
 
 /* ==================== Controls ==================== */
+/* Dosya seçme alanı: yazı rengi ve boyutu uyumlu. */
 input[type="file"] {
   color: var(--text);
   font-size: 0.88rem;
@@ -224,6 +347,7 @@ button, select, input[type="number"] {
   font-size: 0.88rem;
 }
 
+/* Genel buton: koyu zemin, kenarlık, yuvarlak köşe. Her buton sınıfı bu temel stili kullanır. */
 button {
   background: var(--bg-panel-raised);
   color: var(--text);
@@ -238,6 +362,7 @@ button:hover { border-color: var(--muted-dim); background: #262b33; }
 button:active { transform: translateY(1px); }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Ana eylem butonu (turuncu, koyu yazı). a.primary: bağlantı da düğme gibi görünsün diye eklenmiş. */
 button.primary, a.primary {
   background: var(--orange);
   border-color: var(--orange);
@@ -254,6 +379,7 @@ button.primary:hover, a.primary:hover {
   border-color: #ffa15f;
 }
 
+/* Seçili iyileştirme seçeneği: teal kenarlık ve yazı (seçildiğini gösterir). */
 .enhance-buttons .enhance-btn.active {
   background: var(--teal-dim);
   border-color: var(--teal);
@@ -293,6 +419,7 @@ select {
   padding: 7px 8px;
 }
 
+/* Geri dön düğmesi: kutusuz, sadece yazı; üzerine gelince teal. */
 .back-btn {
   background: none;
   border: none;
@@ -309,6 +436,7 @@ select {
   text-decoration: none;
 }
 
+/* 'Baştan başla' düğmesi: solundan 10 piksel boşluk. */
 #start-over-btn { margin-left: 10px; }
 
 .logo-link { color: inherit; text-decoration: none; }
@@ -323,6 +451,7 @@ select {
 
 .empty-msg { padding: 4px 0; }
 
+/* Kütüphane öğesi satırı: ad, etiketler ve eylem düğmeleri yan yana; dar ekranda alt satıra geçer. */
 .lib-item {
   display: flex;
   align-items: center;
@@ -330,6 +459,7 @@ select {
   gap: 14px;
   background: var(--bg-panel-raised);
   border: 1px solid var(--line);
+  border-left: 3px solid var(--sec, var(--line)); /* bölüm rengi şeridi */
   border-radius: 8px;
   padding: 12px 16px;
   flex-wrap: wrap;
@@ -347,6 +477,7 @@ select {
   font-size: 0.94rem;
 }
 
+/* Ad düzenleme kutusu: teal kenarlık (düzenlenebilir olduğunu gösterir). */
 .lib-name-input {
   background: var(--bg);
   color: var(--text);
@@ -363,6 +494,7 @@ select {
   color: var(--muted-dim);
 }
 
+/* Giriş/çıkış etiketi: küçük, büyük harf, teal zemin. */
 .lib-tag {
   display: inline-block;
   font-family: var(--font-mono);
@@ -372,14 +504,12 @@ select {
   padding: 1px 6px;
   border-radius: 4px;
   margin-right: 6px;
-  background: var(--teal-dim);
-  color: var(--teal);
+  background: var(--sec-dim, var(--teal-dim));
+  color: var(--sec, var(--teal));
 }
 
-.lib-tag.output-tag {
-  background: var(--orange-dim);
-  color: var(--orange);
-}
+/* İzleme listesindeki sıra numarası: teal zemin, sağ tarafta boşluk. */
+.lib-tag.pl-index { margin-right: 8px; }
 
 .lib-actions {
   display: flex;
@@ -388,17 +518,20 @@ select {
   flex-wrap: wrap;
 }
 
+/* Satır içindeki düğme ve bağlantılar biraz küçültülür. */
 .lib-actions button, .lib-actions a {
   padding: 7px 12px;
   font-size: 0.82rem;
 }
 
+/* Sil düğmesi üzerine gelince kırmızı kenarlık ve yazı (tehlikeli eylem uyarısı). */
 .lib-delete-btn:hover {
   border-color: var(--red);
   color: var(--red);
 }
 
 /* ==================== Vizör (video preview) ==================== */
+/* Vizör (video önizleme) kutusu: siyah zemin, en fazla 720 piksel, kenarlık. */
 #video-wrap, #trim-video-wrap {
   position: relative;
   width: 100%;
@@ -417,6 +550,7 @@ select {
   vertical-align: top;
 }
 
+/* Video üzerine konan görünmez katman: tüm alanı kaplar, imleç artı şekli (kırpma alanı seçimi için). */
 #overlay {
   position: absolute;
   top: 0;
@@ -427,6 +561,7 @@ select {
 }
 
 /* Kamera vizörü köşe işaretleri - imza öge */
+/* Kamera vizörü köşe işaretleri: 4 köşede turuncu L şekli. Sahte elemanlarla (::before ve ::after) çizilir, içerik ve tıklama alanına girmez (pointer-events none). */
 #video-wrap::before, #video-wrap::after,
 #trim-video-wrap::before, #trim-video-wrap::after {
   content: "";
@@ -439,18 +574,21 @@ select {
   opacity: 0.85;
 }
 
+/* Sol üst köşe işareti: sağ ve alt kenarlık kapalı, sadece iki kenar görünür. */
 #video-wrap::before, #trim-video-wrap::before {
   top: 8px; left: 8px;
   border-right: none;
   border-bottom: none;
 }
 
+/* Sağ üst köşe işareti: sol ve alt kenarlık kapalı. */
 #video-wrap::after, #trim-video-wrap::after {
   top: 8px; right: 8px;
   border-left: none;
   border-bottom: none;
 }
 
+/* Alt köşe işaretleri: sahte eleman yerine ayrı HTML öğeleriyle çizilir (eski yöntem olabilir; kontrol edilmeli). */
 .corner-bl, .corner-br {
   position: absolute;
   width: 18px;
@@ -464,10 +602,386 @@ select {
 .corner-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
 .corner-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
 
+/* Sonuç alanı (dönüştürme sonucu): üstten 16 piksel boşluk. */
 #result-wrap { margin-top: 16px; }
 
+/* İzleme listesi: ana sayfanın en üstünde, oynatıcı ve sıralı liste. */
+.pl-box { margin-bottom: 24px; }
+.pl-video {
+  display: block;
+  width: 100%;
+  max-height: 60vh;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 8px 0 10px;
+}
+.pl-controls { margin-bottom: 12px; flex-wrap: wrap; }
+.pl-item.pl-current { border-color: var(--teal); background: var(--teal-dim); }
+
+/* Kütüphane satırı: "⋯" menüsü satırın içinde konumlanır. */
+.lib-item { position: relative; }
+
+/* Küçük resim: solda, 16:9. Üretilememişse yer tutucu kutu gösterilir. */
+.lib-thumb {
+  width: 128px;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #000;
+}
+.lib-thumb-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel);
+  color: var(--muted-dim);
+  font-size: 1.1rem;
+}
+.pl-item .lib-thumb { width: 96px; }
+.lib-watch-btn { font-weight: 600; }
+.lib-menu-wrap { position: relative; }
+.lib-menu-btn {
+  min-width: 38px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.lib-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+.lib-menu button {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 9px 10px;
+  border-radius: 6px;
+}
+.lib-menu button:hover { background: var(--bg-panel); }
+.lib-menu-danger { color: var(--red) !important; }
+
+/* 600 piksel ve altı (telefon): başlık küçülür, kart iç boşluğu azalır, adım göstergesi tam genişlik olur. */
 @media (max-width: 600px) {
   header h1 { font-size: 1.5rem; }
   .card { padding: 20px 18px; }
   #stepper { max-width: 100%; }
+  /* Telefonda liste satırındaki düğmeler alt alta sarılır ve dokunmaya uygun büyüklükte olur. */
+  .lib-actions button, .lib-actions a { padding: 8px 10px; }
+  .pl-video { max-height: 45vh; }
 }
+
+/* ==================== Mobil ana sayfa (600 px altı) ====================
+   Masaüstünde alt çubuk gizli ve üç bölüm alt alta; bu bloklar yalnızca telefonda uygulanır. */
+/* Masaüstünde mini şerit ve yüzen düğme hiç görünmez. Bu kural mobil bloktan ÖNCE gelmeli ki mobil display değerini ezmesin. */
+.mini-player, .fab { display: none; }
+
+@media (max-width: 600px) {
+  /* Satırlar: ad üstte (en çok iki satır), altında kısa meta ve düğmeler. */
+  /* Telefonda: küçük resim solda, ad ve meta sağında; düğmeler altta tam genişlikte. */
+  .lib-item { flex-wrap: wrap; align-items: flex-start; gap: 10px 12px; padding: 12px; }
+  .lib-thumb { width: 112px; }
+  .pl-item .lib-thumb { width: 88px; }
+  .lib-item-main { flex: 1; min-width: 0; }
+  .lib-actions { order: 3; width: 100%; }
+  .lib-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .meta-res, .meta-extra { display: none; }
+  .lib-actions { width: 100%; }
+  .lib-actions > button, .lib-actions > a { min-height: 44px; }
+  .lib-menu-wrap { margin-left: auto; }
+  .lib-menu-btn { min-height: 44px; min-width: 44px; }
+  .lib-menu { right: 0; }
+  #home-section .row { flex-wrap: wrap; gap: 8px; }
+
+  /* Mini oynatıcı şeridi: alt sekme çubuğunun hemen üstünde, tek satır. */
+  .mini-player {
+    display: flex;
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 29;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+  .mini-title {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: none;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+    font-size: 0.88rem;
+    padding: 10px 6px;
+  }
+  .mini-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 1rem;
+  }
+  /* Şerit açıkken sayfanın altı ve '+' düğmesi yukarı kayar. */
+  body.mini-on { padding-bottom: 84px; }
+  body.mini-on .fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
+
+  /* Yüzen '+' düğmesi: sağ altta, alt çubuğun üstünde. */
+  .fab {
+    display: flex;
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 28;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.9rem;
+    line-height: 1;
+    font-weight: 500;
+    background: var(--orange);
+    color: #101216;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* ==================== Yeni bileşenler ==================== */
+
+/* Kütüphane arama kutusu. */
+.lib-search {
+  width: 100%;
+  margin: 0 0 4px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+}
+.lib-search:focus { outline: none; border-color: var(--teal); }
+
+/* Sıkıştırma kalitesi: üç düğmeli segment; seçili olan teal. */
+.quality-buttons { gap: 0; flex-wrap: wrap; }
+.quality-btn {
+  border-radius: 0;
+  margin-left: -1px;
+  min-width: 120px;
+  padding: 9px 14px;
+}
+.quality-btn:first-child { border-radius: 8px 0 0 8px; margin-left: 0; }
+.quality-btn:last-child { border-radius: 0 8px 8px 0; }
+.quality-btn.active {
+  background: var(--teal-dim);
+  border-color: var(--teal);
+  color: var(--teal);
+  z-index: 1;
+}
+.quality-btn .hint { display: block; font-size: 0.7rem; margin-top: 2px; }
+
+/* Gelişmiş ayarlar: varsayılan kapalı, tek satırlık açıklama. */
+details.advanced { margin: 10px 0 4px; }
+details.advanced summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.88rem;
+  padding: 6px 0;
+}
+details.advanced[open] summary { color: var(--text); }
+
+/* Zaman çizgisi: iki şeffaf range girdisi tek bir parça gibi üst üste biner. */
+.timeline {
+  position: relative;
+  height: 38px;
+  margin: 14px 0 6px;
+}
+.tl-track {
+  position: absolute;
+  left: 0; right: 0; top: 16px;
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+}
+.tl-range {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: var(--teal);
+  border-radius: 3px;
+  opacity: 0.85;
+}
+.tl-playhead {
+  position: absolute;
+  top: 9px; bottom: -9px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  pointer-events: none;
+}
+.tl-input {
+  position: absolute;
+  left: 0; right: 0; top: 10px;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+}
+.tl-input::-webkit-slider-runnable-track { background: none; height: 22px; }
+.tl-input::-moz-range-track { background: none; }
+.tl-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 14px; height: 22px;
+  border-radius: 4px;
+  background: var(--orange);
+  border: 2px solid var(--bg);
+  cursor: ew-resize;
+}
+.tl-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 14px; height: 22px;
+  border-radius: 4px;
+  background: var(--orange);
+  border: 2px solid var(--bg);
+  cursor: ew-resize;
+}
+.tl-input:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--text); }
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--bg-panel-raised);
+  color: var(--text);
+}
+.kbd-hint { margin: 2px 0 10px; }
+
+/* İşleme ilerleme çubuğu. */
+.progress {
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 12px 0 0;
+}
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--teal);
+  transition: width 0.25s ease;
+}
+
+/* Onay penceresi (silme gibi geri alınamayan işler). */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.modal-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px 22px 18px;
+}
+.modal-box p { margin: 0 0 16px; line-height: 1.5; }
+.modal-actions { justify-content: flex-end; }
+button.danger { border-color: var(--red); color: var(--red); }
+button.danger:hover { background: rgba(255, 85, 102, 0.12); }
+
+/* Masaüstünde kütüphane kartları: ızgara, üstte küçük resim. Telefonda satır görünümü kalır. */
+@media (min-width: 601px) {
+  #sources-list, #outputs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  #sources-list .lib-item, #outputs-list .lib-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  #sources-list .lib-thumb, #outputs-list .lib-thumb { width: 100%; }
+  #sources-list .lib-item-main, #outputs-list .lib-item-main { min-width: 0; }
+  #sources-list .lib-actions, #outputs-list .lib-actions { flex-wrap: wrap; }
+  #sources-list .empty-msg, #outputs-list .empty-msg { grid-column: 1 / -1; }
+}
+
+/* Telefonda Kaydet düğmesi alt kenarda sabit kalır; uzun ayar listesinde her zaman erişilir. */
+@media (max-width: 600px) {
+  .save-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 40;
+    margin: 0;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: var(--bg-panel);
+    border-top: 1px solid var(--line);
+  }
+  .save-bar button { width: 100%; }
+  body:has(#editor-section:not(.hidden)) { padding-bottom: 92px; }
+  .quality-btn { min-width: 0; flex: 1; padding: 9px 6px; }
+  .tl-input::-webkit-slider-thumb { width: 18px; height: 26px; }
+}
+
+/* Çoklu izleme listesi: liste seçici ve düğmeler; çıktı satırındaki liste menüsü; metin girişli pencere. */
+.pl-list-row { gap: 8px; flex-wrap: wrap; align-items: center; margin: 0 0 6px; }
+.pl-list-row .hint { margin: 0 4px 0 0; }
+.lib-menu-btn.wide {
+  min-width: 0;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.modal-input {
+  width: 100%;
+  margin-bottom: 14px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+.modal-input:focus { outline: none; }

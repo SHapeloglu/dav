@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<!-- DAV → MP4 dönüştürücü ve düzenleyici arayüzü. Sayfa app.py içindeki ana route (/) tarafından render_template ile açılır; Jinja değişkeni kullanmaz. -->
+<!-- Tek sayfada dört adım vardır: kütüphane (T00), yükleme (T01), kırpma (T02) ve düzenleme / kaydetme (T03). Adımlar section'larda tutulur, hangisinin görüneceğini static/app.js yönetir. -->
+<!-- Stil dosyası static/style.css, mantık static/app.js içindedir. -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -19,15 +22,12 @@
       </div>
       <div class="stepper-marks">
         <div class="step" data-step="1">
-          <span class="step-tc">T01</span>
           <span class="step-label">Yükle</span>
         </div>
         <div class="step" data-step="2">
-          <span class="step-tc">T02</span>
           <span class="step-label">Kırp</span>
         </div>
         <div class="step" data-step="3">
-          <span class="step-tc">T03</span>
           <span class="step-label">Düzenle</span>
         </div>
       </div>
@@ -35,24 +35,109 @@
   </header>
 
   <main>
+    <!-- Adım 0 (kütüphane): daha önce yüklenen kaynaklar ve işlenmiş videolar burada listelenir. Listeler app.js tarafından doldurulur; boşsa açıklama mesajı görünür. -->
     <!-- ==================== ADIM 0: KÜTÜPHANE / ANA SAYFA ==================== -->
     <section id="home-section" class="card step-panel">
       <div class="row" style="justify-content: space-between;">
         <h2 style="margin:0;">Kütüphane</h2>
         <button id="new-video-btn" class="primary">+ Yeni Video İşle</button>
       </div>
+      <input type="search" id="lib-search" class="lib-search" placeholder="Videolarda ara…" aria-label="Videolarda ara">
 
-      <h3>Kaynaklar <span class="hint">(yüklenmiş / kırpılmış, düzenlemeye devam edilebilir)</span></h3>
-      <div id="sources-list" class="library-list">
-        <p class="hint empty-msg">Henüz kaynak yok. Yukarıdan yeni bir video yükleyin.</p>
+      <!-- Akordiyon: üç bölüm başlığa tıklanınca açılır. Varsayılan kapalı; açık/kapalı durum app.js tarafından hatırlanır. -->
+      <details id="acc-playlist" class="acc" data-acc="playlist">
+        <summary class="acc-head">
+          <span class="acc-chev" aria-hidden="true"></span>
+          <span class="acc-title">İzleme Listesi</span>
+          <span class="sec-count" id="sec-count-playlist"></span>
+          <span class="acc-summary" id="acc-summary-playlist"></span>
+        </summary>
+        <div class="acc-body">
+          <div class="acc-tools pl-tools">
+            <div class="row pl-list-row">
+              <label for="pl-select" class="hint">Liste</label>
+              <select id="pl-select" class="sort-select" aria-label="İzleme listesi seç"></select>
+              <button type="button" id="pl-new-btn">+ Yeni liste</button>
+              <button type="button" id="pl-rename-btn">Adını değiştir</button>
+              <button type="button" id="pl-delete-btn" class="danger">Listeyi sil</button>
+            </div>
+          </div>
+          <p class="hint">Sırayla oynar. Sırayı ▲ ▼ ile değiştirebilirsiniz.</p>
+          <video id="pl-video" class="pl-video hidden" controls playsinline preload="metadata"></video>
+          <div id="pl-controls" class="row pl-controls hidden">
+            <button id="pl-prev-btn">⏮ Önceki</button>
+            <button id="pl-next-btn">Sonraki ⏭</button>
+            <span id="pl-now" class="hint"></span>
+          </div>
+          <div id="playlist-list" class="library-list">
+            <p class="hint empty-msg">Listeniz boş. İşlenmiş videolarda "+ Listeye ekle" deyin.</p>
+          </div>
+        </div>
+      </details>
+
+      <details id="acc-sources" class="acc" data-acc="sources">
+        <summary class="acc-head">
+          <span class="acc-chev" aria-hidden="true"></span>
+          <span class="acc-title">Kaynaklar</span>
+          <span class="sec-count" id="sec-count-sources"></span>
+          <span class="acc-summary" id="acc-summary-sources"></span>
+        </summary>
+        <div class="acc-body">
+          <div class="acc-tools">
+            <p class="hint">Yüklenmiş ve kırpılmış videolar; düzenlemeye devam edilebilir.</p>
+            <select id="sort-sources" class="sort-select" aria-label="Kaynakları sırala">
+              <option value="date_desc">En yeni</option>
+              <option value="date_asc">En eski</option>
+              <option value="name_asc">Ad (A→Z)</option>
+              <option value="name_desc">Ad (Z→A)</option>
+              <option value="size_desc">Boyut (büyük)</option>
+              <option value="size_asc">Boyut (küçük)</option>
+            </select>
+          </div>
+          <div id="sources-list" class="library-list">
+            <p class="hint empty-msg">Henüz kaynak yok. Yukarıdan yeni bir video yükleyin.</p>
+          </div>
+        </div>
+      </details>
+
+      <details id="acc-outputs" class="acc" data-acc="outputs">
+        <summary class="acc-head">
+          <span class="acc-chev" aria-hidden="true"></span>
+          <span class="acc-title">İşlenmiş Videolar</span>
+          <span class="sec-count" id="sec-count-outputs"></span>
+          <span class="acc-summary" id="acc-summary-outputs"></span>
+        </summary>
+        <div class="acc-body">
+          <div class="acc-tools">
+            <p class="hint">Dışa aktarılmış MP4 dosyaları.</p>
+            <select id="sort-outputs" class="sort-select" aria-label="İşlenmiş videoları sırala">
+              <option value="date_desc">En yeni</option>
+              <option value="date_asc">En eski</option>
+              <option value="name_asc">Ad (A→Z)</option>
+              <option value="name_desc">Ad (Z→A)</option>
+              <option value="size_desc">Boyut (büyük)</option>
+              <option value="size_asc">Boyut (küçük)</option>
+            </select>
+          </div>
+          <div id="outputs-list" class="library-list">
+            <p class="hint empty-msg">Henüz işlenmiş video yok.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- Mobil mini oynatıcı: İzleme bölümü kapalıyken ve bir video oynuyorsa altta çıkar (style.css). -->
+      <div id="mini-player" class="mini-player hidden">
+        <button type="button" id="mini-title" class="mini-title" aria-label="İzleme listesini aç"></button>
+        <button type="button" id="mini-toggle" class="mini-btn" aria-label="Oynat">▶</button>
+        <button type="button" id="mini-next" class="mini-btn" aria-label="Sonraki">⏭</button>
+        <button type="button" id="mini-close" class="mini-btn" aria-label="Oynatıcıyı kapat">✕</button>
       </div>
 
-      <h3>İşlenmiş Videolar</h3>
-      <div id="outputs-list" class="library-list">
-        <p class="hint empty-msg">Henüz işlenmiş video yok.</p>
-      </div>
+      <!-- Yüzen '+' düğmesi (mobil): yeni video işlemeyi her zaman erişilebilir kılar. Masaüstünde gizli. -->
+      <button type="button" id="fab-new" class="fab" aria-label="Yeni video işle">+</button>
     </section>
 
+    <!-- Adım 1 (yükleme): .dav veya video dosyası seçilip yüklenir. Dosya tipi kontrolü önce tarayıcıda (accept), sonra sunucuda yapılmalıdır. -->
     <!-- ==================== ADIM 1: YÜKLE ==================== -->
     <section id="upload-section" class="card step-panel hidden">
       <button class="back-btn" data-goto="0">◀ Kütüphaneye Dön</button>
@@ -65,20 +150,26 @@
       <div id="upload-status" class="status"></div>
     </section>
 
+    <!-- Adım 2 (kırpma): video önizlemesinde başlangıç ve bitiş anı seçilir. Önizleme düşük kalitededir ve yalnız zaman seçmek içindir. -->
+    <!-- Not: Kırpma en yakın anahtar kareye (keyframe) hizalandığı için başlangıç birkaç saniye kayabilir; bu beklenen davranıştır. -->
     <!-- ==================== ADIM 2: KIRP ==================== -->
     <section id="trim-section" class="card step-panel hidden">
       <button class="back-btn" data-goto="1">◀ Geri (Yeni video yükle)</button>
       <h2>Başlangıç / Bitiş Seç</h2>
-      <p class="hint">Bu önizleme hızlı olması için kaba kalitede üretildi, sadece zaman seçimi içindir.
-        İzleyip istediğin başlangıç ve bitiş anında butona bas, sonra "Kırp ve Devam Et" ile devam et.
-        Kırpma kaliteyi bozmadan ve çok hızlı yapılır; bir sonraki adımda artık sadece bu kısa
-        bölüm işleneceği için her şey çok daha hızlı olacak.
-        Not: Hız için kırpma en yakın anahtar kareye hizalanır, başlangıç noktası birkaç saniye kayabilir.</p>
+      <p class="hint">Videoyu izleyip başlangıç ve bitiş noktasını zaman çizgisinden ya da düğmelerle seçin, sonra devam edin.</p>
 
       <div id="trim-video-wrap">
         <video id="trim-video" controls playsinline></video>
         <span class="corner-bl"></span><span class="corner-br"></span>
       </div>
+
+      <!-- Zaman çizgisi: iki tutamak başlangıç ve bitişi gösterir; sürüklemek kırpma aralığını değiştirir. -->
+      <div id="timeline" class="timeline">
+        <div class="tl-track"><div id="tl-range" class="tl-range"></div><div id="tl-playhead" class="tl-playhead"></div></div>
+        <input type="range" id="tl-start" class="tl-input" min="0" max="100" step="0.05" value="0" aria-label="Başlangıç noktası">
+        <input type="range" id="tl-end" class="tl-input" min="0" max="100" step="0.05" value="100" aria-label="Bitiş noktası">
+      </div>
+      <p class="hint kbd-hint">Kısayollar: <kbd>Boşluk</kbd> oynat/durdur · <kbd>←</kbd> <kbd>→</kbd> 5 sn · <kbd>I</kbd> başlangıç · <kbd>O</kbd> bitiş</p>
 
       <div class="row">
         <button id="set-start-btn">Başlangıcı Ayarla (▶ konumu)</button>
@@ -98,11 +189,13 @@
       <div id="trim-status" class="status"></div>
     </section>
 
+    <!-- Adım 3 (düzenle ve kaydet): kırpılmış videoda isteğe bağlı bir alan seçilir (canvas üzerine sürükleme), kalite iyileştirme ve büyütme ayarlanır, MP4 olarak işlenir. -->
+    <!-- CRF düşük değer = yüksek kalite ve büyük dosya; preset ise işlem hızı ile sıkıştırma verimliliğini dengeler (ultrafast hızlı, slower yavaş ama küçük dosya). -->
     <!-- ==================== ADIM 3: DÜZENLE VE KAYDET ==================== -->
     <section id="editor-section" class="card step-panel hidden">
       <button class="back-btn" id="editor-back-btn" data-goto="2">◀ Geri</button>
-      <h2>Alan Seç, Yakınlaştır ve Kaliteyi İyileştir</h2>
-      <p class="hint">Fare ile videonun üzerine tıklayıp sürükleyerek bir dikdörtgen çizin. Bu alan kırpılıp yakınlaştırılır. Seçim yapmazsanız tüm kare kullanılır.</p>
+      <h2>Düzenle ve Kaydet</h2>
+      <p class="hint">İsterseniz videonun üzerinde sürükleyerek bir alan seçin; seçmezseniz tüm kare kullanılır.</p>
 
       <div id="video-wrap">
         <video id="preview-video" controls playsinline></video>
@@ -115,32 +208,58 @@
         <span id="selection-info" class="hint"></span>
       </div>
 
-      <h3>Kalite İyileştirme</h3>
+      <h3>Görüntü iyileştirme</h3>
       <div class="row enhance-buttons">
-        <button class="enhance-btn" data-value="none">İyileştirme Yok</button>
-        <button class="enhance-btn active" data-value="light">Hafif</button>
+        <button class="enhance-btn active" data-value="none">İyileştirme Yok</button>
+        <button class="enhance-btn" data-value="light">Hafif</button>
         <button class="enhance-btn" data-value="strong">Güçlü</button>
+      </div>
+
+      <h3>Sıkıştırma kalitesi</h3>
+      <div class="row quality-buttons" role="group" aria-label="Sıkıştırma kalitesi">
+        <button type="button" class="quality-btn" data-crf="18">Yüksek <span class="hint">önerilen</span></button>
+        <button type="button" class="quality-btn" data-crf="23">Dengeli</button>
+        <button type="button" class="quality-btn" data-crf="24">Küçük dosya</button>
       </div>
 
       <div class="row">
         <label for="upscale-input">Büyütme</label>
         <input type="number" id="upscale-input" min="1" max="4" step="0.1" value="1.0">
-        <label for="crf-input">CRF</label>
-        <input type="number" id="crf-input" min="0" max="35" step="1" value="18">
-        <label for="preset-input">Preset</label>
-        <select id="preset-input">
-          <option value="ultrafast">ultrafast</option>
-          <option value="fast">fast</option>
-          <option value="medium" selected>medium</option>
-          <option value="slow">slow</option>
-          <option value="slower">slower</option>
-        </select>
       </div>
 
-      <div class="row">
+      <details class="advanced">
+        <summary>Gelişmiş ayarlar (CRF, ses, preset)</summary>
+        <div class="row">
+          <label for="crf-input">CRF</label>
+          <input type="number" id="crf-input" min="0" max="35" step="1" value="18">
+          <label for="audio-input">Ses</label>
+          <select id="audio-input" title="Ses bit hızı. 32 kbps ve altı mono kaydedilir.">
+            <option value="16">16 kbps (mono)</option>
+            <option value="24">24 kbps (mono)</option>
+            <option value="32">32 kbps (mono)</option>
+            <option value="48">48 kbps</option>
+            <option value="64" selected>64 kbps (varsayılan)</option>
+            <option value="96">96 kbps</option>
+            <option value="128">128 kbps</option>
+            <option value="192">192 kbps</option>
+          </select>
+          <label for="preset-input">Preset</label>
+          <select id="preset-input">
+            <option value="ultrafast">ultrafast</option>
+            <option value="veryfast" selected>veryfast (varsayılan)</option>
+            <option value="fast">fast</option>
+            <option value="medium">medium</option>
+            <option value="slow">slow</option>
+            <option value="slower">slower</option>
+          </select>
+        </div>
+      </details>
+
+      <div class="row save-bar">
         <button id="save-btn" class="primary">İşle ve MP4 Olarak Kaydet</button>
       </div>
 
+      <div id="process-progress" class="progress hidden"><div id="progress-fill" class="progress-fill"></div></div>
       <div id="process-status" class="status"></div>
       <div id="result-wrap" class="hidden">
         <label for="output-name-input" class="hint">Bu videoya isim ver:</label>
@@ -156,6 +275,19 @@
       </div>
     </section>
   </main>
+
+  <!-- Sayfa mantığı static/app.js dosyasındadır. Sayfanın en altında yüklenir; böylece yukarıdaki öğeler hazır olur. -->
+  <!-- Silme gibi geri alınamayan işlemler için kendi onay penceresi (tarayıcının confirm kutusu yerine). -->
+  <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-text">
+    <div class="modal-box">
+      <p id="confirm-text"></p>
+      <input type="text" id="confirm-input" class="modal-input hidden" maxlength="60" aria-label="Metin">
+      <div class="row modal-actions">
+        <button type="button" id="confirm-cancel">Vazgeç</button>
+        <button type="button" id="confirm-ok" class="danger">Sil</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/static/app.js"></script>
 </body>

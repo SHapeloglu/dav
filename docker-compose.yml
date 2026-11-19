@@ -1,0 +1,17 @@
+# DAV → MP4 web uygulaması (videoperfect.kelvinaydinlatma.com.tr). Basic auth host nginx'te (/etc/nginx/htpasswd_dav).
+# Veri sunucudan bağlanır: yüklemeler, çıktılar, SQLite kütüphane (uygulama yolları BASE_DIR'e göredir → /app).
+services:
+  dav-web:
+    build: .
+    image: dav-web:latest
+    container_name: dav-web
+    restart: unless-stopped
+    # Yalnız yerel erişim (127.0.0.1:8001). Dış erişim host nginx üzerinden olur ve basic auth ile korunur.
+    ports: ["127.0.0.1:8001:8001"]
+    # Yüklemeler, çıktılar ve SQLite kütüphane dosyası sunucudaki dosyalara bağlanır; konteyner silinse de veri kalır.
+    volumes:
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+      - ./library.db:/app/library.db
+    # Bellek üst sınırı 1 GB (video dönüştürme bellek kullanır).
+    mem_limit: 1g

@@ -1,0 +1,7 @@
+venv
+uploads
+outputs
+library.db
+.git
+__pycache__
+app.py_v1
