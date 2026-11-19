@@ -4,7 +4,7 @@
 
 ## 2026-11-19
 **Yapılanlar:** Canlıdan alınan kod, md ve Docker dosyaları `c90ec80` commit'i ile GitHub `main`'e push edildi (12 dosya; kullanıcı verisi dahil değil). Commit sonrası eski "onay bekliyor" satırları `CLAUDE.md` ve `task.md` içinde düzeltildi.
-**Kararlar / neden:** Kullanıcı onayıyla push yapıldı. Basic auth kullanıcı adı (`videoperfect`) `task.md` ve `session.md` içinde public repoda duruyor; bu satırların çıkarılması kullanıcı kararına bırakıldı.
+**Kararlar / neden:** Kullanıcı onayıyla push yapıldı. Basic auth kullanıcı adı public repodaki md dosyalarından çıkarıldı (kullanıcı onayıyla). Not: önceki commit'lerin geçmişinde hâlâ duruyor; geçmişten silmek için ayrı bir işlem gerekir.
 **Açık sorunlar:** Basic auth şifresi değişikliği, karantina klasörü silme kararı, `deploy/` dosyalarının eşitlenmesi, tarayıcı doğrulaması (yeniden işleme, listeler, akordiyon).
 **Sıradaki adım:** Kullanıcı kararları gelince ilgili işi yap.
 
