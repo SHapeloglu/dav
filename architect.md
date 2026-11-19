@@ -57,7 +57,7 @@ Ses: 64 kbps stereo varsayılan. Benchmark'ta H.265 ve AV1 avantaj sağlamadı; 
 
 - nginx → `127.0.0.1:8001` (proxy_pass), basic auth host nginx'te (2026-10-18).
 - Canlı çalıştırma: Docker (`docker-compose.yml`, `Dockerfile`). systemd unit pasif.
-- `deploy/` altındaki unit ve nginx örnekleri 8000 portunu ve `--workers 2` kullanıyor; canlı 8001 ve 1 worker. Eşitleme görevi `task.md`'de.
+- `deploy/` altındaki unit ve nginx örnekleri canlıyla eşit: 8001, 1 worker, basic auth (2026-11-19).
 
 ## Mimari Kararlar
 

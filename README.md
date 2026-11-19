@@ -34,8 +34,8 @@ Adım adım rehber (FileZilla + SSH, systemd + gunicorn, nginx, SSL): [KURULUM.m
 
 Örnek yapılandırmalar `deploy/` klasöründe:
 
-- `deploy/dav-web.service` — gunicorn (600 sn timeout). Örnek dosya 8000 portunu ve 2 worker kullanıyor; canlı kurulum 8001 ve 1 worker. Eşitleme bekliyor.
-- `deploy/nginx_dav_web.conf` — reverse proxy, `client_max_body_size 2048M`. Örnek dosyada basic auth satırları yok.
+- `deploy/dav-web.service` — gunicorn (1 worker, 600 sn timeout, 127.0.0.1:8001).
+- `deploy/nginx_dav_web.conf` — reverse proxy, `client_max_body_size 2048M`, basic auth.
 
 Unit dosyasındaki `--bind` portu ile nginx `proxy_pass` portunun aynı olduğundan emin olun.
 

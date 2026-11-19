@@ -2,7 +2,7 @@
 
 Dahua güvenlik kamerası kayıtlarını (`.dav`, ayrıca mp4/avi/mkv/mov) tarayıcıdan yükleyip önizleme, **zaman aralığı kırpma**, **görüntü alanı kırpma (crop)**, iyileştirme (hqdn3d gürültü azaltma + unsharp + eq), büyütme (upscale) ve H.264'e dönüştürme yapan Flask + ffmpeg uygulaması. Yüklenen/üretilen videolar SQLite kütüphanesinde (`library.db`) listelenir, yeniden adlandırılır, silinir, izleme listelerine eklenir.
 
-- **GitHub:** `SHapeloglu/dav` — **PUBLIC repo**. Son commit `c90ec80` (2026-11-19: canlı kod, md dosyaları, `Dockerfile`, `docker-compose.yml`, `.dockerignore`). Yerelde commit edilmemiş değişiklik yok.
+- **GitHub:** `SHapeloglu/dav` — **PUBLIC repo**. Son commit `5b59f01` (2026-11-19). Yerelde commit edilmemiş değişiklik yok.
 - **Canlı:** Docker `dav-web` (`/var/www/dav_web_app`, compose, `127.0.0.1:8001`, `mem_limit 1g`, `uploads/`, `outputs/`, `library.db` bağlı).
   - **AutoSleep** (`/opt/autosleep`): 5 dakika boşta kalan konteyneri `docker stop` ile durdurur; istek gelince 7999 üzerinden uyandırır. Konteyner `Exited` görünmesi normaldir.
   - systemd `dav-web.service` **pasif** (`disabled`, `inactive`). Kullanılmıyor.
@@ -21,7 +21,7 @@ python app.py                            # yerel test
 
 ## Kurallar ve Tuzaklar
 
-- **`deploy/` dosyaları canlıyla aynı değil:** `deploy/dav-web.service` 8000 portu ve `--workers 2` kullanıyor; canlı 8001 ve 1 worker. `deploy/nginx_dav_web.conf` `auth_basic` satırlarını içermiyor. Deploy dosyalarını değiştirirken canlıyı esas al.
+- **`deploy/` dosyaları canlıyla eşit (2026-11-19):** unit 8001 ve 1 worker kullanıyor; nginx örneğinde `auth_basic` var. SSL/certbot blokları örneklerde yok. Canlı değişirse deploy dosyaları da güncellenmeli.
 - Uzun ffmpeg işleri istek içinde senkron çalışıyor (gunicorn timeout 600 sn, tek worker) — büyük dosyada aynı anda ikinci istek bekler.
 - İşleme isteği NDJSON akışı döner (`{"type":"progress"}`, `{"type":"done"}`, `{"type":"error"}`). İstemci bağlantıyı keserse ffmpeg öldürülür ve yarım çıktı silinir.
 - ffmpeg her adımda önce akış kopyalama/hızlı yolu, hata olursa yeniden kodlamalı **fallback** komutunu dener; bu yapıyı koru (bazı DAV konteynerleri standart değil).

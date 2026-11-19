@@ -5,8 +5,9 @@
 ## 2026-11-19
 **Yapılanlar:** Canlıdan alınan kod, md ve Docker dosyaları `c90ec80` commit'i ile GitHub `main`'e push edildi (12 dosya; kullanıcı verisi dahil değil). Commit sonrası eski "onay bekliyor" satırları `CLAUDE.md` ve `task.md` içinde düzeltildi.
 **Kararlar / neden:** Kullanıcı onayıyla push yapıldı. Basic auth kullanıcı adı public repodaki md dosyalarından çıkarıldı (kullanıcı onayıyla). Not: önceki commit'lerin geçmişinde hâlâ duruyor; geçmişten silmek için ayrı bir işlem gerekir.
-**Açık sorunlar:** Basic auth şifresi değişikliği, karantina klasörü silme kararı, `deploy/` dosyalarının eşitlenmesi, tarayıcı doğrulaması (yeniden işleme, listeler, akordiyon).
-**Sıradaki adım:** Kullanıcı kararları gelince ilgili işi yap.
+**Yapılanlar (devam):** Basic auth şifresi değiştirildi (eski htpasswd yedeklendi; yanlış şifre 401). `deploy/dav-web.service` 8001 ve 1 worker, `deploy/nginx_dav_web.conf` `auth_basic` ile canlıyla eşitlendi. Karantina klasörü `/root/dav_orphan_quarantine/20261106/` sunucuda bulunamadı; çıktılar 18/18 kayıtla eşleşiyor.
+**Açık sorunlar:** Tarayıcı doğrulaması (yeniden işleme, listeler, akordiyon) yapılmadı. Yeni şifre kullanıcıya iletildi; tarayıcıda yeniden girilmesi gerekiyor.
+**Sıradaki adım:** Deploy dosyaları değişikliğini commit/push etmek için onay al; tarayıcı doğrulamasını yap.
 
 ## 2026-11-18
 **Yapılanlar:** Canlı sunucuya (`/var/www/dav_web_app`) erişim sağlandı; canlıdaki kod (`app.py`, `templates/`, `static/`, `Dockerfile`, `docker-compose.yml`, `.dockerignore`) ve md dosyaları yerel repoya alındı. Md dosyaları canlı durumla yeniden yazıldı. Kontroller: `docker ps -a`, `docker logs dav-web`, `systemctl is-enabled dav-web`, `ss -ltn`, `/opt/autosleep/autosleep.py` (`TIMEOUT = 300`), `ek_projeler.py` (`videoperfect` → `dav-web`). Canlı kodda `upscale` (0.1–4), `crf` (0–51), `preset` ve `enhance` (beyaz liste) sınırları doğrulandı.
