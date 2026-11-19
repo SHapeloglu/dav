@@ -2,7 +2,7 @@
 
 Dahua güvenlik kamerası kayıtlarını (`.dav`, ayrıca mp4/avi/mkv/mov) tarayıcıdan yükleyip önizleme, **zaman aralığı kırpma**, **görüntü alanı kırpma (crop)**, iyileştirme (hqdn3d gürültü azaltma + unsharp + eq), büyütme (upscale) ve H.264'e dönüştürme yapan Flask + ffmpeg uygulaması. Yüklenen/üretilen videolar SQLite kütüphanesinde (`library.db`) listelenir, yeniden adlandırılır, silinir, izleme listelerine eklenir.
 
-- **GitHub:** `SHapeloglu/dav` — **PUBLIC repo**. Son commit `5e67791` (docs: README). 2026-11-18 itibarıyla yerelde commit edilmemiş değişiklikler var (kod, md, `Dockerfile`, `docker-compose.yml`, `.dockerignore`). Commit ve push onay bekliyor.
+- **GitHub:** `SHapeloglu/dav` — **PUBLIC repo**. Son commit `c90ec80` (2026-11-19: canlı kod, md dosyaları, `Dockerfile`, `docker-compose.yml`, `.dockerignore`). Yerelde commit edilmemiş değişiklik yok.
 - **Canlı:** Docker `dav-web` (`/var/www/dav_web_app`, compose, `127.0.0.1:8001`, `mem_limit 1g`, `uploads/`, `outputs/`, `library.db` bağlı).
   - **AutoSleep** (`/opt/autosleep`): 5 dakika boşta kalan konteyneri `docker stop` ile durdurur; istek gelince 7999 üzerinden uyandırır. Konteyner `Exited` görünmesi normaldir.
   - systemd `dav-web.service` **pasif** (`disabled`, `inactive`). Kullanılmıyor.

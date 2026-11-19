@@ -2,7 +2,6 @@
 
 ## 🔜 Sıradaki
 
-- [ ] 2026-11-18 🔴 Yerel repodaki değişiklikleri commit'le ve GitHub'a (public repo) push et: `app.py`, `templates/index.html`, `static/app.js`, `static/style.css`, `Dockerfile`, `docker-compose.yml`, `.dockerignore`, md dosyaları. Onay bekleniyor.
 - [ ] Deploy dosyalarını canlıyla eşitle: `deploy/dav-web.service` 8000 yerine 8001 ve `--workers 1` olmalı (şu an `--workers 2`); `deploy/nginx_dav_web.conf` `auth_basic` + `auth_basic_user_file /etc/nginx/htpasswd_dav` satırlarını eklemeli.
 - [ ] 2026-11-18 ❓ Basic auth şifresi: önceki incelemede olası sızıntı (nginx `_csv` probe) not edilmişti. Şifre değiştirilsin mi? Karar bekleniyor.
 - [ ] 2026-11-18 Tarayıcıda doğrulama: "Yeniden İşle" (kaynak silinmişken çıktı üzerinden), çoklu izleme listesi ve akordiyon gerçek kullanımda test edilmedi (yalnız jsdom testleri ve HTTP kontrolleri yapıldı).
@@ -16,6 +15,7 @@ _(şu anda boş)_
 
 ## ✅ Tamamlanan
 
+- [x] 2026-11-19 — Canlı kod, md dosyaları ve Docker dosyaları commit edildi ve push edildi (`c90ec80`, public repo `main`).
 - [x] 2026-11-18 — Canlı çalıştırma yolu netleşti: Docker `dav-web` (`/var/www/dav_web_app`, `127.0.0.1:8001`). `Exited` durumu AutoSleep'in 5 dk boşta kalınca durdurmasından kaynaklanıyor (`/opt/autosleep/autosleep.py`, `ek_projeler.py`). systemd `dav-web.service` pasif.
 - [x] 2026-11-18 — `upscale` (0.1–4) ve `crf` (0–51) sınırları sunucu tarafında var; `enhance` ve `preset` beyaz listede.
 - [x] 2026-11-06 → 11-07 — Ses bitrate seçimi (varsayılan 64 kbps stereo, ≤32 mono), CRF seçimi (Yüksek 18, Dengeli 23, Küçük dosya 24), NDJSON ilerleme, zaman çizelgesi, klavye kısayolları, akordiyon, çoklu izleme listesi (migrasyon: eski liste "Ana liste"), "Yeniden İşle" çıktıdan devam.

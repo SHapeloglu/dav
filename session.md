@@ -2,6 +2,12 @@
 
 ---
 
+## 2026-11-19
+**Yapılanlar:** Canlıdan alınan kod, md ve Docker dosyaları `c90ec80` commit'i ile GitHub `main`'e push edildi (12 dosya; kullanıcı verisi dahil değil). Commit sonrası eski "onay bekliyor" satırları `CLAUDE.md` ve `task.md` içinde düzeltildi.
+**Kararlar / neden:** Kullanıcı onayıyla push yapıldı. Basic auth kullanıcı adı (`videoperfect`) `task.md` ve `session.md` içinde public repoda duruyor; bu satırların çıkarılması kullanıcı kararına bırakıldı.
+**Açık sorunlar:** Basic auth şifresi değişikliği, karantina klasörü silme kararı, `deploy/` dosyalarının eşitlenmesi, tarayıcı doğrulaması (yeniden işleme, listeler, akordiyon).
+**Sıradaki adım:** Kullanıcı kararları gelince ilgili işi yap.
+
 ## 2026-11-18
 **Yapılanlar:** Canlı sunucuya (`/var/www/dav_web_app`) erişim sağlandı; canlıdaki kod (`app.py`, `templates/`, `static/`, `Dockerfile`, `docker-compose.yml`, `.dockerignore`) ve md dosyaları yerel repoya alındı. Md dosyaları canlı durumla yeniden yazıldı. Kontroller: `docker ps -a`, `docker logs dav-web`, `systemctl is-enabled dav-web`, `ss -ltn`, `/opt/autosleep/autosleep.py` (`TIMEOUT = 300`), `ek_projeler.py` (`videoperfect` → `dav-web`). Canlı kodda `upscale` (0.1–4), `crf` (0–51), `preset` ve `enhance` (beyaz liste) sınırları doğrulandı.
 **Kararlar / neden:** `dav-web` konteynerinin `Exited` durumu bir arıza değil: AutoSleep 5 dakika boşta kalan konteyneri `docker stop` ile durduruyor, istek gelince 7999 üzerinden uyandırıyor. Canlı yol Docker olarak kabul edildi; systemd birimi pasif. Commit ve push yapılmadı (repo public; onay bekleniyor).
